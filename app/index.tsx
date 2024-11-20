@@ -6,13 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Button,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ThemedView } from "@/components/ThemedView";
 import { Link, router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import * as LocalAuthentication from "expo-local-authentication";
-
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,7 +47,6 @@ export default function LoginScreen() {
 
       if (result.success) {
         Alert.alert("Success", "Authentication successful!");
-        router.push("/(tabs)");
       } else {
         Alert.alert("Failed", "Authentication failed. Please try again.");
       }
@@ -111,7 +110,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
       </View>
 
-      <Link href="/(tabs)" style={styles.button}>
+      <Link href="/transaction" style={styles.button}>
         Login
       </Link>
 
