@@ -29,3 +29,18 @@ export const mockTransactions = [
     type: "debit",
   },
 ];
+
+// Extend the mock transactions
+export const mockTransactionsDetail = mockTransactions.map((transaction) => ({
+  ...transaction,
+  status: "Completed", // Default for all
+  paymentMethod: transaction.type === "credit" ? "Bank Transfer" : "Debit Card",
+  category:
+    transaction.description.toLowerCase() === "salary"
+      ? "Income"
+      : transaction.description.toLowerCase() === "groceries"
+      ? "Food & Drink"
+      : transaction.description.toLowerCase() === "rent"
+      ? "Housing"
+      : "Miscellaneous",
+}));
