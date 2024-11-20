@@ -6,17 +6,34 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  Button,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ThemedView } from "@/components/ThemedView";
-import { Link, router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
+import { router } from "expo-router";
 import * as LocalAuthentication from "expo-local-authentication";
+
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Mock credentials
+  const MOCK_EMAIL = "test@example.com";
+  const MOCK_PASSWORD = "password123";
+
+  // Handle login
+  const handleLogin = () => {
+    if (email === MOCK_EMAIL && password === MOCK_PASSWORD) {
+      Alert.alert("Login Successful", "Redirecting to the transaction page.");
+      router.push("/transaction");
+    } else {
+      Alert.alert(
+        "Login Failed",
+        "Invalid email or password. Please try again."
+      );
+    }
+  };
 
   // Face ID Authentication
   const handleFaceID = async () => {
@@ -104,15 +121,12 @@ export default function LoginScreen() {
             />
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
       </View>
 
-      <Link href="/transaction" style={styles.button}>
-        Login
-      </Link>
+      {/* Login Button */}
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
 
       {/* Divider */}
       <ThemedView style={styles.dividerContainer}>
@@ -196,21 +210,17 @@ const styles = StyleSheet.create({
   eyeIconWrapper: {
     padding: 8,
   },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginTop: 8,
-  },
-  forgotPasswordText: {
-    color: "#3B82F6",
-  },
   button: {
     width: "100%",
     paddingVertical: 15,
-    textAlign: "center",
     borderRadius: 8,
     backgroundColor: "#6C56F2",
+    marginTop: 20,
+    alignItems: "center",
+  },
+  buttonText: {
     color: "white",
-    marginVertical: 20,
+    fontSize: 16,
   },
   dividerContainer: {
     flexDirection: "row",
