@@ -52,12 +52,12 @@ export default function TransactionHistoryScreen() {
         <TouchableOpacity
           key={index}
           style={styles.transactionItem}
-          // onPress={() => router.push(`/transaction/details/${index + 1}`)}
+          onPress={() => router.push(`/transaction/details/${index + 1}`)}
         >
           <View style={styles.transactionRow}>
             <Text style={styles.label}>Amount:</Text>
             <Text style={styles.value}>
-              {showAmounts ? `$${transaction.amount.toFixed(2)}` : "••••"}
+              {showAmounts ? `RM ${transaction.amount.toFixed(2)}` : "••••"}
             </Text>
           </View>
           <View style={styles.transactionRow}>
