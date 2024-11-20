@@ -35,41 +35,45 @@ export default function LoginScreen() {
     }
   };
 
-  // Face ID Authentication
-  const handleFaceID = async () => {
+  // Fingerprint Authentication
+  const handleFingerprint = async () => {
     try {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
       if (!hasHardware) {
         Alert.alert(
-          "Face ID not supported",
-          "Your device does not support Face ID."
+          "Fingerprint not supported",
+          "Your device does not support Fingerprint."
         );
         return;
       }
 
       if (!isEnrolled) {
         Alert.alert(
-          "No Face ID enrolled",
-          "Please enroll your Face ID in settings."
+          "No Fingerprint enrolled",
+          "Please enroll your Fingerprint in settings."
         );
         return;
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Authenticate with Face ID",
+        promptMessage: "Authenticate with Fingerprint",
         fallbackLabel: "Use Passcode",
       });
 
       if (result.success) {
         Alert.alert("Success", "Authentication successful!");
+        router.push("/transaction");
       } else {
         Alert.alert("Failed", "Authentication failed. Please try again.");
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Error", "There was an error with Face ID authentication.");
+      Alert.alert(
+        "Error",
+        "There was an error with Fingerprint authentication."
+      );
     }
   };
 
@@ -140,7 +144,7 @@ export default function LoginScreen() {
         {/* Biometric Authentication */}
         <TouchableOpacity
           style={styles.authenticateItem}
-          onPress={handleFaceID}
+          onPress={handleFingerprint}
         >
           <Ionicons name="finger-print" size={32} color="#4B5563" />
           <Text style={styles.authMethodText}>Touch ID</Text>
@@ -149,7 +153,7 @@ export default function LoginScreen() {
         {/* Face ID */}
         <TouchableOpacity
           style={styles.authenticateItem}
-          onPress={handleFaceID}
+          onPress={handleFingerprint}
         >
           <Ionicons name="scan" size={32} color="#4B5563" />
           <Text style={styles.authMethodText}>Face ID</Text>
