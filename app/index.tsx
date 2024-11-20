@@ -77,6 +77,56 @@ export default function LoginScreen() {
     }
   };
 
+  // Face ID Authentication
+  const handleFaceID = async () => {
+    try {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const supportedTypes =
+        await LocalAuthentication.supportedAuthenticationTypesAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+      // Check specifically for facial recognition
+      const hasFaceID = supportedTypes.includes(
+        LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
+      );
+
+      if (!hasHardware || !hasFaceID) {
+        Alert.alert(
+          "Face ID not supported",
+          "Your device does not support Face ID."
+        );
+        return;
+      }
+
+      if (!isEnrolled) {
+        Alert.alert(
+          "No Face ID enrolled",
+          "Please enroll your Face ID in settings."
+        );
+        return;
+      }
+
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Authenticate with Face ID",
+        fallbackLabel: "Use Passcode",
+        // Remove authenticationType as it's not a valid option
+      });
+
+      if (result.success) {
+        Alert.alert("Success", "Face ID authentication successful!");
+        router.push("/transaction");
+      } else {
+        Alert.alert(
+          "Failed",
+          "Face ID authentication failed. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "There was an error with Face ID authentication.");
+    }
+  };
+
   return (
     <ThemedView style={styles.container}>
       {/* Welcome Section */}
@@ -153,21 +203,10 @@ export default function LoginScreen() {
         {/* Face ID */}
         <TouchableOpacity
           style={styles.authenticateItem}
-          onPress={handleFingerprint}
+          onPress={handleFaceID}
         >
           <Ionicons name="scan" size={32} color="#4B5563" />
           <Text style={styles.authMethodText}>Face ID</Text>
-        </TouchableOpacity>
-
-        {/* Social Logins */}
-        <TouchableOpacity style={styles.authenticateItem}>
-          <Ionicons name="logo-google" size={32} color="#DB4437" />
-          <Text style={styles.authMethodText}>Google</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.authenticateItem}>
-          <Ionicons name="logo-facebook" size={32} color="#3B5998" />
-          <Text style={styles.authMethodText}>Facebook</Text>
         </TouchableOpacity>
       </ThemedView>
     </ThemedView>
