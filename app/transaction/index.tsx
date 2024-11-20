@@ -11,16 +11,18 @@ import {
 } from "react-native";
 import * as LocalAuthentication from "expo-local-authentication";
 import { router } from "expo-router";
-import { mockTransactions } from "@/data/mockTransaction";
+import { MOCK_TRANSACTION } from "@/configs/mockTransaction";
 
 export default function TransactionHistoryScreen() {
-  const [transactions, setTransactions] = useState(mockTransactions);
+  const [transactions] = useState(MOCK_TRANSACTION);
   const [refreshing, setRefreshing] = useState(false);
   const [showAmounts, setShowAmounts] = useState(false);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 2000); // Simulate API call
+    setTimeout(() => {
+      setRefreshing(false); // Reset refreshing state
+    }, 2000); // Simulate a network request delay
   };
 
   const handleBiometricAuth = async () => {

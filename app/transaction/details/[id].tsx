@@ -2,11 +2,11 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { mockTransactionsDetail } from "@/data/mockTransaction";
+import { MOCK_TRANSACTION } from "@/configs/mockTransaction";
 
 export default function TransactionDetailScreen() {
   const { id } = useLocalSearchParams();
-  const transaction = mockTransactionsDetail.find((t) => t.id === id);
+  const transaction = MOCK_TRANSACTION.find((t) => t.id === id);
 
   if (!transaction) {
     return (
@@ -28,7 +28,7 @@ export default function TransactionDetailScreen() {
           <Text style={styles.value}>{transaction.date}</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.label}>Type:</Text>
+          <Text style={styles.label}>Payment Method:</Text>
           <Text style={styles.value}>{transaction.type}</Text>
         </View>
         <View style={styles.row}>
@@ -47,10 +47,6 @@ export default function TransactionDetailScreen() {
         <View style={styles.row}>
           <Text style={styles.label}>Transaction ID:</Text>
           <Text style={styles.value}>{transaction.id}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Payment Method:</Text>
-          <Text style={styles.value}>{transaction.paymentMethod || "N/A"}</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Category:</Text>
