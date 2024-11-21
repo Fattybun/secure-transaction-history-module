@@ -5,12 +5,14 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 ## Get started
 
 1. Install dependencies
+   First, install the necessary dependencies for your app:
 
    ```bash
    npm install
    ```
-
+   
 2. Start the app
+   To launch the app, use the following command:
 
    ```bash
     npx expo start
@@ -23,11 +25,30 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+You can begin developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## APK Demo
+You can download the APK file for a demo of the app:
+
+- **APK download link**: [Demo APK](https://expo.dev/artifacts/eas/q3AFavma6eJNmDnoEjrigT.apk)
+
+## Login Flow
+The app will check if the device supports biometric authentication and proceed with the following priority:
+
+1. **Face ID** (if available)
+2. **Fingerprint** (if Face ID is not available but fingerprint is supported)
+3. **Traditional login method**
+   
+**Login Credentials:**
+
+- **Email**: test@example.com
+- **Password**: password123
+  
+If biometrics are unavailable, the user might need to log in using the usual method.
 
 ## Get a fresh project
 
-When you're ready, run:
+When you're ready to start fresh, run:
 
 ```bash
 npm run reset-project
