@@ -1,8 +1,8 @@
-type paymentMethod = "Credit Card" | "Debit Card" | "FPX";
+export type paymentMethod = "Credit Card" | "Debit Card" | "FPX";
 
-type transactionStatus = "Successful" | "Pending" | "Failed";
+export type transactionStatus = "Successful" | "Pending" | "Failed";
 
-type category =
+export type category =
   | "Beverage"
   | "Meal"
   | "Rental"
