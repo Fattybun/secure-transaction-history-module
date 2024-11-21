@@ -12,118 +12,95 @@ import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { router } from "expo-router";
 import * as LocalAuthentication from "expo-local-authentication";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("test@example.com");
+  const [password, setPassword] = useState("password123");
   const [showPassword, setShowPassword] = useState(false);
+
+  const { checkNetworkConnection } = useNetworkStatus();
 
   // Mock credentials
   const MOCK_EMAIL = "test@example.com";
   const MOCK_PASSWORD = "password123";
 
   // Handle login
-  const handleLogin = () => {
-    if (email === MOCK_EMAIL && password === MOCK_PASSWORD) {
-      Alert.alert("Login Successful", "Redirecting to the transaction page.");
-      router.push("/transaction");
-    } else {
-      Alert.alert(
-        "Login Failed",
-        "Invalid email or password. Please try again."
-      );
-    }
-  };
-
-  // Fingerprint Authentication
-  const handleFingerprint = async () => {
+  const handleLogin = async () => {
     try {
-      const hasHardware = await LocalAuthentication.hasHardwareAsync();
-      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      // First, check network connection
+      await checkNetworkConnection();
 
-      if (!hasHardware) {
-        Alert.alert(
-          "Fingerprint not supported",
-          "Your device does not support Fingerprint."
-        );
-        return;
-      }
-
-      if (!isEnrolled) {
-        Alert.alert(
-          "No Fingerprint enrolled",
-          "Please enroll your Fingerprint in settings."
-        );
-        return;
-      }
-
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Authenticate with Fingerprint",
-        fallbackLabel: "Use Passcode",
-      });
-
-      if (result.success) {
-        Alert.alert("Success", "Authentication successful!");
-        router.push("/transaction");
+      // Then proceed with login validation
+      if (email === MOCK_EMAIL && password === MOCK_PASSWORD) {
+        Alert.alert("Login Successful", "Redirecting to the transaction page.");
+        router.replace("/transaction");
       } else {
-        Alert.alert("Failed", "Authentication failed. Please try again.");
+        Alert.alert(
+          "Login Failed",
+          "Invalid email or password. Please try again."
+        );
       }
     } catch (error) {
-      console.error(error);
       Alert.alert(
-        "Error",
-        "There was an error with Fingerprint authentication."
+        "Network Error",
+        "No internet connection. Please check your network."
       );
     }
   };
 
-  // Face ID Authentication
-  const handleFaceID = async () => {
+  // Biometric Authentication
+  const handleBiometricAuth = async () => {
     try {
+      // Network check
+      await checkNetworkConnection();
+
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const supportedTypes =
         await LocalAuthentication.supportedAuthenticationTypesAsync();
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-      // Check specifically for facial recognition
+      // Check for Face ID first
       const hasFaceID = supportedTypes.includes(
         LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
       );
 
-      if (!hasHardware || !hasFaceID) {
-        Alert.alert(
-          "Face ID not supported",
-          "Your device does not support Face ID."
+      // Determine authentication method
+      const authType = hasFaceID ? "Face ID" : "Fingerprint";
+
+      if (!hasHardware) {
+        return Alert.alert(
+          `${authType} not supported`,
+          `Your device does not support ${authType}.`
         );
-        return;
       }
 
       if (!isEnrolled) {
-        Alert.alert(
-          "No Face ID enrolled",
-          "Please enroll your Face ID in settings."
+        return Alert.alert(
+          `No ${authType} enrolled`,
+          `Please enroll your ${authType} in settings.`
         );
-        return;
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Authenticate with Face ID",
+        promptMessage: `Authenticate with ${authType}`,
         fallbackLabel: "Use Passcode",
-        // Remove authenticationType as it's not a valid option
       });
 
       if (result.success) {
-        Alert.alert("Success", "Face ID authentication successful!");
-        router.push("/transaction");
+        Alert.alert("Success", `${authType} authentication successful!`);
+        router.replace("/transaction");
       } else {
         Alert.alert(
           "Failed",
-          "Face ID authentication failed. Please try again."
+          `${authType} authentication failed. Please try again.`
         );
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "There was an error with Face ID authentication.");
+      Alert.alert(
+        "Network Error",
+        "No internet connection. Please check your network."
+      );
     }
   };
 
@@ -178,8 +155,8 @@ export default function LoginScreen() {
       </View>
 
       {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={styles.button} onPress={handleBiometricAuth}>
+        <ThemedText style={styles.buttonText}>Login</ThemedText>
       </TouchableOpacity>
 
       {/* Divider */}
@@ -194,19 +171,23 @@ export default function LoginScreen() {
         {/* Biometric Authentication */}
         <TouchableOpacity
           style={styles.authenticateItem}
-          onPress={handleFingerprint}
+          onPress={handleBiometricAuth}
         >
-          <Ionicons name="finger-print" size={32} color="#4B5563" />
-          <Text style={styles.authMethodText}>Touch ID</Text>
-        </TouchableOpacity>
-
-        {/* Face ID */}
-        <TouchableOpacity
-          style={styles.authenticateItem}
-          onPress={handleFaceID}
-        >
-          <Ionicons name="scan" size={32} color="#4B5563" />
-          <Text style={styles.authMethodText}>Face ID</Text>
+          <ThemedView style={styles.authenticatIconWrapper}>
+            <Ionicons
+              name="scan"
+              size={32}
+              color="#4B5563"
+              style={styles.authenticateFaceId}
+            />
+            <Ionicons
+              name="finger-print"
+              size={32}
+              color="#4B5563"
+              style={styles.authenticateFingerprint}
+            />
+          </ThemedView>
+          <Text style={styles.authMethodText}>Touch ID / Face ID</Text>
         </TouchableOpacity>
       </ThemedView>
     </ThemedView>
@@ -257,12 +238,12 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 15,
     borderRadius: 8,
-    backgroundColor: "#6C56F2",
+    backgroundColor: "#4B5563",
     marginTop: 20,
     alignItems: "center",
   },
   buttonText: {
-    color: "white",
+    color: "#fff",
     fontSize: 16,
   },
   dividerContainer: {
@@ -288,6 +269,20 @@ const styles = StyleSheet.create({
   authenticateItem: {
     display: "flex",
     alignItems: "center",
+  },
+  authenticatIconWrapper: {
+    display: "flex",
+    alignItems: "center",
+  },
+  authenticateFaceId: {
+    position: "absolute",
+    bottom: -4,
+    fontSize: 36,
+  },
+  authenticateFingerprint: {
+    // position: "absolute",
+    bottom: 4,
+    fontSize: 20,
   },
   authMethodText: {
     fontSize: 12,
